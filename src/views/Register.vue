@@ -11,7 +11,7 @@
                 </div>
                 <h4>Selamat datang!</h4>
                 <h6 class="font-weight-light">Daftar untuk menggunakan aplikasi daily scrum.</h6>
-                <form class="pt-3" method="post" action="#">
+                <form v-on:submit.prevent="Register" class="pt-3">
                   <div class="form-group">
                     <div class="input-group">
                       <div class="input-group-prepend bg-transparent">
@@ -25,6 +25,7 @@
                         id="firstname"
                         name="firstname"
                         placeholder="First Name"
+                        v-model="firstname"
                         required
                       />
                     </div>
@@ -42,6 +43,7 @@
                         id="lastname"
                         name="lastname"
                         placeholder="Last Name"
+                        v-model="lastname"
                         required
                       />
                     </div>
@@ -59,6 +61,7 @@
                         id="email"
                         name="email"
                         placeholder="E-Mail"
+                        v-model="email"
                         required
                       />
                     </div>
@@ -76,6 +79,7 @@
                         name="password"
                         id="password"
                         placeholder="New Password"
+                        v-model="password"
                         required
                       />
                     </div>
@@ -93,6 +97,7 @@
                         name="password_verify"
                         id="password_verify"
                         placeholder="Retype Your New Password"
+                        v-model="password_verify"
                         required
                       />
                     </div>
@@ -117,42 +122,34 @@
 
 <script>
 module.exports = {
-  methods: {
-      Add : function(){
-      this.action = "insert";
-      this.name = "";
-      this.email = "";
-      this.password = ""; 
-      this.role = "";
-    }, 
-    Save : function(){
-      let conf = { headers: { "Authorization" : 'Bearer ' + this.key } };
-      this.$bvToast.show("loadingToast");
-      if(this.action === "insert"){
-        let form = new FormData();
-        form.append("id", this.id);
-        form.append("name", this.name);
-        form.append("email", this.email);
-        form.append("password", this.password);
-        form.append("role", this.role);
+  data(){
+    return {
+      firstname: "",
+      lastname: "",
+      email: "",
+      password: "",
+      password_verify: "",
+    };
+  },
 
-        this.axios.post("/petugas", form, conf)
-        .then(response => {
-          this.$bvToast.hide("loadingToast");
-          if(this.search == ""){
-            this.getData();
-          } else {
-            this.searching();
-          }
-          this.message = response.data.message;
-          this.$bvToast.show("message");
-        })
-        .catch(error => {
-          console.log(error);
-        });
-      }
-    }   
-  } 
-   
-}
+  methods: {
+    Register : function(){
+      let firstname = this.firstname;
+      let lastname = this.lastname;
+      let email = this.email;
+      let password = this.password;
+      let password_verify = this.password_verify;
+      this.$store
+      .dispatch('register',{
+        firstname,
+        lastname,
+        email,
+        password,
+        password_verify
+      })
+      .then(() => this.$router.push('/login'))
+      .catch(err => console.log(err));
+    }
+  }       
+};
 </script>
